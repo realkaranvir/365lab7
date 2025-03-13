@@ -70,6 +70,66 @@ def cancellation():
         else:
             print("Invalid input. Please enter 'Y' for Yes or 'N' for No.")
 
+def detailed_reservation_info():
+    print("\nDetailed Reservation Information")
+    first_name = input("Enter first name (or leave blank for any): ")
+    last_name = input("Enter last name (or leave blank for any): ")
+    room_code = input("Enter room code (or leave blank for any): ")
+    reservation_code = input("Enter reservation code (or leave blank for any): ")
+    start_date = input("Enter start date (YYYY-MM-DD, or leave blank for any): ")
+    end_date = input("Enter end date (YYYY-MM-DD, or leave blank for any): ")
+
+    query = """
+    SELECT r.CODE, r.FirstName, r.LastName, r.Room, rm.RoomName, r.CheckIn, r.Checkout, 
+           r.Kids, r.Adults, rm.bedType, rm.maxOcc, rm.basePrice
+    FROM lab7_reservations r
+    JOIN lab7_rooms rm ON r.Room = rm.RoomCode
+    WHERE 1=1
+    """
+    
+    params = []
+    
+    if first_name:
+        query += " AND r.FirstName LIKE %s"
+        params.append(first_name + "%")
+    
+    if last_name:
+        query += " AND r.LastName LIKE %s"
+        params.append(last_name + "%")
+    
+    if room_code:
+        query += " AND r.Room LIKE %s"
+        params.append(room_code + "%")
+    
+    if reservation_code:
+        query += " AND r.CODE = %s"
+        params.append(reservation_code)
+
+    if start_date and end_date:
+        query += " AND r.Checkout >= %s AND r.CheckIn <= %s"
+        params.append(start_date)
+        params.append(end_date)
+
+    
+    cursor.execute(query, tuple(params))
+    results = cursor.fetchall()
+
+    if results:
+        print("\nReservations:")
+        for row in results:
+            print(f"""
+            Reservation Code: {row[0]}
+            Guest Name: {row[1]} {row[2]}
+            Room: {row[3]} - {row[4]}
+            Check-in: {row[5]}
+            Check-out: {row[6]}
+            Guests: {row[7]} Children, {row[8]} Adults
+            Bed Type: {row[9]}
+            Max Occupancy: {row[10]}
+            Base Price: ${row[11]:.2f}
+            """)
+    else:
+        print("No matching reservations found.")
 
 def reservations():
     first_name = input("Enter first name: ")
@@ -206,7 +266,7 @@ while (user_input != "5"):
         case "3":
             cancellation()
         case "4":
-            print("Detailed Reservation Information")
+            detailed_reservation_info()
         case "5":
             print("Revenue")
         case "6":
