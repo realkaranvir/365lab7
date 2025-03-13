@@ -50,6 +50,27 @@ def rooms_and_rates():
         room_name, popularity, next_available, recent_stay = row
         print(f"\nRoom Name: {room_name}\nPopularity Score: {popularity}\nNext Available: {next_available}\nMost Recent Stay: {recent_stay} days\n")
 
+def cancellation():
+    reservation_code = input("Enter reservation code you'd like to cancel: ").strip()
+    
+    while True:
+        confirm = input(f"Confirm you'd like to cancel {reservation_code}? (Y/N): ").strip().lower()
+        
+        if confirm == "n":
+            print("Cancellation aborted.")
+            return
+        elif confirm == "y":
+            try:
+                cursor.execute("DELETE FROM lab7_reservations WHERE CODE = %s;", (reservation_code,))
+                conn.commit()  
+                print(f"Reservation {reservation_code} has been successfully canceled.")
+            except mysql.connector.Error as err:
+                print(f"Error: {err}")
+            return
+        else:
+            print("Invalid input. Please enter 'Y' for Yes or 'N' for No.")
+
+
 def reservations():
     first_name = input("Enter first name: ")
     last_name = input("Enter last name: ")
@@ -183,7 +204,7 @@ while (user_input != "5"):
         case "2":
             reservations()
         case "3":
-            print("Reservation Cancellation")
+            cancellation()
         case "4":
             print("Detailed Reservation Information")
         case "5":
