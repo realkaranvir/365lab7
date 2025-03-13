@@ -1,0 +1,16 @@
+FR1:
+
+SELECT RoomName, ROUND((SUM(DATEDIFF(LEAST(CheckOut, CURDATE()), GREATEST(CheckIn, DATE_SUB(CURDATE(), INTERVAL 180 DAY))))/180),2) AS PopularityScore, MAX(CheckOut) AS NextAvailableCheckIn, 
+    (SELECT DATEDIFF(r2.CheckOut, r2.CheckIn) 
+     FROM lab7_reservations r2 
+     WHERE r2.Room = RoomCode AND r2.CheckOut <= CURDATE() 
+     ORDER BY r2.CheckOut DESC 
+     LIMIT 1) AS MostRecentStayLength
+FROM lab7_rooms
+JOIN lab7_reservations
+ON RoomCode = Room
+WHERE CheckOut > DATE_SUB(CURDATE(), INTERVAL 180 DAY)
+AND CheckIn < DATE_ADD(CURDATE(), INTERVAL 1 DAY)
+GROUP BY RoomCode;
+
+
