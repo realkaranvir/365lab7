@@ -1,0 +1,44 @@
+Author: Darryl <darryljamescruz@gmail.com>
+Date:   Fri Mar 14 17:19:22 2025 -0700
+
+    FR5: Added revenue calculation function to compute total revenue between specified dates
+    last remaining task if to do deliverables before final submission
+
+ lab7/main.py | 38 ++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 36 insertions(+), 2 deletions(-)
+
+commit 79a01c2d67780137d2767166d93414da6ce9808e
+Author: davidquach <91435066+davidquach@users.noreply.github.com>
+Date:   Thu Mar 13 11:51:13 2025 -0700
+
+    Added detailed_reservation_infor()
+    
+    FR4 detailed_reservation_info() completed
+
+ lab7/main.py | 62 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 61 insertions(+), 1 deletion(-)
+
+commit bdf76e96817763397a361e63fae6b43af45ad157
+Author: davidquach <91435066+davidquach@users.noreply.github.com>
+Date:   Thu Mar 13 11:24:54 2025 -0700
+
+    FR3 Added cancellation function
+    
+    Added cancellation function, accepting a reservation code and removing all instances.
+
+ lab7/main.py | 23 ++++++++++++++++++++++-
+ 1 file changed, 22 insertions(+), 1 deletion(-)
+
+commit cd56bacabfa138f219f0ffaf73ac02681a01d931
+Author: realkaranvir <113927390+realkaranvir@users.noreply.github.com>
+Date:   Thu Mar 13 10:28:17 2025 -0700
+
+    initial commit
+
+ .DS_Store             | Bin 0 -> 6148 bytes
+ lab7/.DS_Store        | Bin 0 -> 6148 bytes
+ lab7/.gitignore       |   1 +
+ lab7/main.py          | 200 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ lab7/queries.txt      |  16 ++++++
+ lab7/requirements.txt |   1 +
+ 6 files changed, 218 insertions(+)
