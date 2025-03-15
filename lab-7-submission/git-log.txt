@@ -1,3 +1,22 @@
+commit edd774e4f7b5ccdd341a8b45edbc54dea7c8fe02 (HEAD -> main, origin/main, origin/HEAD)
+Author: Darryl <darryljamescruz@gmail.com>
+Date:   Fri Mar 14 17:48:29 2025 -0700
+
+    FR5: rewrote revenue code to reflect req -> system now provides a month-by-month overview of revenue for the current calendar year
+
+ lab7/main.py | 117 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++------------------------
+ 1 file changed, 83 insertions(+), 34 deletions(-)
+
+commit 2d8b1b2e42068d5a54efcee08d056a9319031265
+Author: Darryl <darryljamescruz@gmail.com>
+Date:   Fri Mar 14 17:22:32 2025 -0700
+
+    finak work git log --stat
+
+ lab7/git-log.txt | 44 ++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 44 insertions(+)
+
+commit ee3b317a8f9be804ec43054caf5f2cdbee146a0f
 Author: Darryl <darryljamescruz@gmail.com>
 Date:   Fri Mar 14 17:19:22 2025 -0700
 
@@ -38,7 +57,7 @@ Date:   Thu Mar 13 10:28:17 2025 -0700
  .DS_Store             | Bin 0 -> 6148 bytes
  lab7/.DS_Store        | Bin 0 -> 6148 bytes
  lab7/.gitignore       |   1 +
- lab7/main.py          | 200 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ lab7/main.py          | 200 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
  lab7/queries.txt      |  16 ++++++
  lab7/requirements.txt |   1 +
  6 files changed, 218 insertions(+)
