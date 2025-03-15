@@ -4,14 +4,18 @@ from datetime import datetime, timedelta
 from decimal import Decimal
 
 
+#ENTER YOUR USERNAME (uncomment the user after)
+#user = ""
 
-#db_password = getpass.getpass()
+#ENTER YOUR MYSQL DB PASSWORD (uncomment the password after)
+#db_password = ""
 
-db_password = "Wtr25_365_028415692" # Remove this line before submitting
+#uncomment the database as it will be set to your username
+#database = user
 
-conn = mysql.connector.connect(user='kasandhu', password=db_password,
+conn = mysql.connector.connect(user=user, password=db_password,
                                host='mysql.labthreesixfive.com',
-                               database='kasandhu')
+                               database=user)
 
 cursor = conn.cursor()
 

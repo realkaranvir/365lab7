@@ -16,7 +16,12 @@
    ```
    pip install mysql-connector-python
    ```
-2. Configure the MySQL database connection parameters in `lab7/main.py` (if applicable).
+2. Configure the MySQL database connection parameters in main.py.
+   - We've left the placeholders to fill with your username and password in main.py. 
+   - They need to be filled in and uncommented before running main.py
+      - user = 'your_username'
+      - password = 'your_password'
+      - database = user
 3. Run the project with:
    ```
    python3 main.py
