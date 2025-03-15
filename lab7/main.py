@@ -1,6 +1,7 @@
 import mysql.connector
 import getpass
 from datetime import datetime, timedelta
+from decimal import Decimal
 
 
 #db_password = getpass.getpass()
@@ -246,7 +247,41 @@ def reservations():
     if total_guests > max_capacity:
         print("\nNo suitable rooms available. The requested number of guests exceeds the largest room capacity.")
 
+def revenue():
+    start_date = input("Enter start date for revenue calculation (YYYY-MM-DD): ")
+    end_date = input("Enter end date for revenue calculation (YYYY-MM-DD): ")
+    
+    query = """
+    SELECT r.CheckIn, r.CheckOut, rm.basePrice
+    FROM lab7_reservations r
+    JOIN lab7_rooms rm ON r.Room = rm.RoomCode
+    WHERE r.CheckOut >= %s AND r.CheckIn <= %s;
+    """
+    # execute the query with the user provided dates
+    cursor.execute(query, (start_date, end_date))
+    reservations_data = cursor.fetchall()
+    
+    # convert string dates to datetime.date objects
+    start_date_dt = datetime.strptime(start_date, "%Y-%m-%d").date()
+    end_date_dt = datetime.strptime(end_date, "%Y-%m-%d").date()
 
+    total_revenue = Decimal('0.0')
+    
+    # calculate revenue for each reservation
+    for res in reservations_data:
+        res_checkin, res_checkout, base_price = res
+        effective_start = max(res_checkin, start_date_dt)
+        effective_end = min(res_checkout, end_date_dt)
+        
+        # check if the reservation is within the specified date range
+        if effective_start > effective_end:
+            continue
+        
+        weekdays, weekends = count_weekdays_weekends(effective_start.strftime("%Y-%m-%d"), effective_end.strftime("%Y-%m-%d"))
+        revenue_for_reservation = (weekdays * base_price) + (weekends * base_price * Decimal('1.1'))
+        total_revenue += revenue_for_reservation
+
+    print(f"Total revenue from {start_date} to {end_date}: ${float(total_revenue):.2f}")
 
 user_input = ""
 while (user_input != "5"):
@@ -268,7 +303,7 @@ while (user_input != "5"):
         case "4":
             detailed_reservation_info()
         case "5":
-            print("Revenue")
+            revenue()
         case "6":
             print("Exiting...")
             break
@@ -278,4 +313,3 @@ while (user_input != "5"):
 
 cursor.close()
 conn.close()
-
