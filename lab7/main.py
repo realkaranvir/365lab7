@@ -246,42 +246,91 @@ def reservations():
 
     if total_guests > max_capacity:
         print("\nNo suitable rooms available. The requested number of guests exceeds the largest room capacity.")
-
+        
+#FR5: Revenue
 def revenue():
-    start_date = input("Enter start date for revenue calculation (YYYY-MM-DD): ")
-    end_date = input("Enter end date for revenue calculation (YYYY-MM-DD): ")
-    
-    query = """
-    SELECT r.CheckIn, r.CheckOut, rm.basePrice
-    FROM lab7_reservations r
-    JOIN lab7_rooms rm ON r.Room = rm.RoomCode
-    WHERE r.CheckOut >= %s AND r.CheckIn <= %s;
-    """
-    # execute the query with the user provided dates
-    cursor.execute(query, (start_date, end_date))
-    reservations_data = cursor.fetchall()
-    
-    # convert string dates to datetime.date objects
-    start_date_dt = datetime.strptime(start_date, "%Y-%m-%d").date()
-    end_date_dt = datetime.strptime(end_date, "%Y-%m-%d").date()
+    # Determine the current calendar year
+    current_year = datetime.now().year
+    start_of_year = datetime(current_year, 1, 1).date()
+    end_of_year = datetime(current_year, 12, 31).date()
+    print(f"\nCalculating revenue for the year {current_year}...")
 
-    total_revenue = Decimal('0.0')
-    
-    # calculate revenue for each reservation
-    for res in reservations_data:
-        res_checkin, res_checkout, base_price = res
-        effective_start = max(res_checkin, start_date_dt)
-        effective_end = min(res_checkout, end_date_dt)
-        
-        # check if the reservation is within the specified date range
-        if effective_start > effective_end:
-            continue
-        
-        weekdays, weekends = count_weekdays_weekends(effective_start.strftime("%Y-%m-%d"), effective_end.strftime("%Y-%m-%d"))
-        revenue_for_reservation = (weekdays * base_price) + (weekends * base_price * Decimal('1.1'))
-        total_revenue += revenue_for_reservation
+    # Retrieve all rooms with their base price
+    cursor.execute("SELECT RoomCode, RoomName, basePrice FROM lab7_rooms;")
+    rooms = cursor.fetchall()
 
-    print(f"Total revenue from {start_date} to {end_date}: ${float(total_revenue):.2f}")
+    # Initialize revenue data for each room
+    room_revenues = {}
+    for room in rooms:
+        room_code, room_name, base_price = room
+        # Ensure base_price is a Decimal
+        if not isinstance(base_price, Decimal):
+            base_price = Decimal(str(base_price))
+        monthly = {m: Decimal('0.0') for m in range(1, 13)}
+        room_revenues[room_code] = {
+            'name': room_name,
+            'base_price': base_price,
+            'monthly': monthly,
+            'total': Decimal('0.0')
+        }
+
+    # Process reservations for each room that overlap the current year
+    for room_code in room_revenues:
+        cursor.execute("""
+            SELECT CheckIn, CheckOut FROM lab7_reservations
+            WHERE Room = %s AND CheckOut >= %s AND CheckIn <= %s;
+        """, (room_code, start_of_year, end_of_year))
+        reservations = cursor.fetchall()
+        for res in reservations:
+            check_in, check_out = res  # Assumed to be date objects
+            # Determine the effective period within the current year
+            effective_start = max(check_in, start_of_year)
+            # For revenue, count nights from effective_start to the day before effective_end
+            effective_end = min(check_out, end_of_year + timedelta(days=1))
+            current_date = effective_start
+            while current_date < effective_end:
+                # Compute revenue for the night (revenue applies for the night of the day)
+                if current_date.weekday() < 5:  # Weekday
+                    night_revenue = room_revenues[room_code]['base_price']
+                else:  # Weekend
+                    night_revenue = room_revenues[room_code]['base_price'] * Decimal('1.1')
+                # Add revenue for the month corresponding to the night
+                month = current_date.month
+                room_revenues[room_code]['monthly'][month] += night_revenue
+                current_date += timedelta(days=1)
+
+    # Compute total yearly revenue for each room
+    for room_code, info in room_revenues.items():
+        info['total'] = sum(info['monthly'].values())
+
+    # Compute overall totals for each month across all rooms
+    overall_monthly_totals = {m: Decimal('0.0') for m in range(1, 13)}
+    overall_total = Decimal('0.0')
+    for info in room_revenues.values():
+        for m in range(1, 13):
+            overall_monthly_totals[m] += info['monthly'][m]
+        overall_total += info['total']
+
+    # Print the revenue table with data and dollar signs
+    header = f"{'Room':<30}" + ''.join([f"{datetime(current_year, m, 1).strftime('%b'):>10}" for m in range(1, 13)]) + f"{'Total':>10}"
+    print(header)
+    print('-' * len(header))
+    for room_code, info in room_revenues.items():
+        row = f"{info['name']:<30}"
+        for m in range(1, 13):
+            amount = int(round(info['monthly'][m], 0))
+            row += f"${amount:9d}"
+        total_amount = int(round(info['total'], 0))
+        row += f"${total_amount:9d}"
+        print(row)
+    
+    totals_row = f"{'Totals':<30}"
+    for m in range(1, 13):
+        tot = int(round(overall_monthly_totals[m], 0))
+        totals_row += f"${tot:9d}"
+    totals_row += f"${int(round(overall_total, 0)):9d}"
+    print('-' * len(header))
+    print(totals_row)
 
 user_input = ""
 while (user_input != "5"):
